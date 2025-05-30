@@ -14,7 +14,7 @@ connectToDb();
 
 
 app.use(cors({
-    origin: 'https://mini-social-nhfz.vercel.app' || 'http://localhost:5173',
+    origin: 'https://mini-social-nhfz.vercel.app',
     credentials: true,  
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']  
