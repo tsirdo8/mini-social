@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const serverless = require('serverless-http');
 const { upload } = require('./config/cloudinary.config');
 const userRouter = require('./users/user.route');
 const connectToDb = require('./db/connectToDB');
@@ -9,24 +10,26 @@ const postRouter = require('./posts/posts.route');
 
 const app = express();
 
+// Connect to MongoDB
 connectToDb();
 
-
-
-   app.use(cors({
+// Middleware: CORS
+app.use(cors({
     origin: [
-        'http://localhost:5173', 
-       
+        'http://localhost:5173',
+        'https://mini-social-nhfz.vercel.app'
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
-}))
+}));
 
+// Middleware: JSON parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('uploads'));
 
+// Routes
 app.use('/users', isAuth, userRouter);
 app.use('/posts', isAuth, postRouter);
 app.use('/auth', authRouter);
@@ -47,19 +50,19 @@ app.post('/upload', upload.single('image'), (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    res.json({ 
+    res.json({
         status: 'OK',
         message: 'Server is running',
         timestamp: new Date().toISOString()
     });
 });
 
+// Global error handler
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ message: "Something broke!" });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+// ✅ Export for Vercel
+module.exports = app;
+module.exports.handler = serverless(app);
