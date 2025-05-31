@@ -16,7 +16,7 @@ connectToDb();
 // Middleware: CORS
 app.use(cors({
     origin: [
-        'http://localhost:5173',
+        'https://mini-social-front.vercel.app',
         
     ],
     credentials: true,
